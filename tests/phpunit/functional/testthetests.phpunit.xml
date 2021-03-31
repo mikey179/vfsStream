@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../../../vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         forceCoversAnnotation="false"
+         printerClass="PHPUnit\TextUI\ResultPrinter"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         verbose="true">
+  <testsuites>
+    <testsuite name="Baseline tests using real files">
+      <directory suffix="TestCase.php">.</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist>
+      <directory>../../../src</directory>
+    </whitelist>
+  </filter>
+
+  <logging>
+    <log type="coverage-html" target="docs/coverage"
+         lowUpperBound="35" highLowerBound="70"/>
+    <log type="coverage-clover" target="docs/phpunit/clover.xml"/>
+    <log type="junit" target="docs/phpunit/junit.xml"/>
+    <log type="testdox-html" target="docs/phpunit/testdox.html"/>
+  </logging>
+
+  <php>
+    <env name="TEST_THE_TESTS_WITH_REAL_FILES" value="yes" />
+    <ini name="memory_limit" value="-1"/>
+    <ini name="error_reporting" value="30719"/> <!-- E_ALL | E_STRICT -->
+  </php>
+</phpunit>
