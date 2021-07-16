@@ -38,7 +38,7 @@ interface FileContent
     /**
      * seeks to the given offset
      */
-    public function seek(int $offset, int $whence): bool;
+    public function seek(int $offset, int $whence, bool $resetEof = true): bool;
 
     /**
      * checks whether pointer is at end of file

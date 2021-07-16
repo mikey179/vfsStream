@@ -33,13 +33,26 @@ abstract class SeekableFileContent implements FileContent
      */
     private $offset = 0;
 
-    /**
+	/**
+	 * has the stream reached EOF; this happens on the first read *after* seeking to the end of the file
+	 *
+	 * @var bool
+	 */
+	private $eof=false;
+
+	/**
      * reads the given amount of bytes from content
      */
     public function read(int $count): string
     {
+        // If offset is already at or past end of file, set EOF flag
+        if ( $this->offset >= $this->size() ) {
+            $this->eof = true;
+            return '';
+	    }
+
         $data = $this->doRead($this->offset, $count);
-        $this->offset += $count;
+        $this->offset += strlen($data);
 
         return $data;
     }
@@ -52,7 +65,7 @@ abstract class SeekableFileContent implements FileContent
     /**
      * seeks to the given offset
      */
-    public function seek(int $offset, int $whence): bool
+    public function seek(int $offset, int $whence, bool $resetEof = true): bool
     {
         $newOffset = $this->offset;
         switch ($whence) {
@@ -77,6 +90,10 @@ abstract class SeekableFileContent implements FileContent
         }
 
         $this->offset = $newOffset;
+        // EOF is always false after a manual seek
+        if ( $resetEof ) {
+            $this->eof = false;
+        }
 
         return true;
     }
@@ -86,7 +103,7 @@ abstract class SeekableFileContent implements FileContent
      */
     public function eof(): bool
     {
-        return $this->size() <= $this->offset;
+        return $this->eof;
     }
 
     /**

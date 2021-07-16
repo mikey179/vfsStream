@@ -906,4 +906,98 @@ class vfsStreamWrapperTestCase extends vfsStreamWrapperBaseTestCase
 
         assertThat(file_get_contents($url), equals($contentB . $contentA));
     }
+
+    /**
+     * @test
+     */
+    public function readsAndWritesOnSameFileHaveDifferentPointers(): void
+    {
+        $contentA = uniqid('a');
+        $contentB = uniqid('b');
+        $url = $this->fileInSubdir->url();
+
+        $fp1 = fopen($url, 'wb');
+        $fp2 = fopen($url, 'rb');
+
+        fwrite($fp1, $contentA);
+        $contentBeforeWrite = fread($fp2, strlen($contentA));
+
+        fwrite($fp1, $contentB);
+        $contentAfterWrite = fread($fp2, strlen($contentB));
+
+        fclose($fp1);
+        fclose($fp2);
+
+        assertThat($contentBeforeWrite, equals($contentA));
+        assertThat($contentAfterWrite, equals($contentB));
+    }
+
+    /**
+     * @test
+     */
+    public function feofIsFalseWhenEmptyFileOpened(): void
+    {
+        $this->fileInSubdir->setContent('');
+
+        $stream = fopen($this->fileInSubdir->url(), 'r');
+
+        assertFalse(feof($stream));
+    }
+
+    /**
+     * @test
+     */
+    public function feofIsTrueAfterEmptyFileRead(): void
+    {
+        $this->fileInSubdir->setContent('');
+
+        $stream = fopen($this->fileInSubdir->url(), 'r');
+
+        fgets($stream);
+
+        assertTrue(feof($stream));
+    }
+
+    /**
+     * @test
+     */
+    public function feofIsFalseWhenEmptyStreamRewound(): void
+    {
+        $this->fileInSubdir->setContent('');
+
+        $stream = fopen($this->fileInSubdir->url(), 'r');
+
+        fgets($stream);
+        rewind($stream);
+        assertFalse(feof($stream));
+    }
+
+    /**
+     * @test
+     */
+    public function feofIsFalseAfterReadingLastLine(): void
+    {
+        $this->fileInSubdir->setContent("Line 1\n");
+
+        $stream = fopen($this->fileInSubdir->url(), 'r');
+
+        fgets($stream);
+
+        assertFalse(feof($stream));
+    }
+
+    /**
+     * @test
+     */
+    public function feofIsTrueAfterReadingBeyondLastLine(): void
+    {
+        $this->fileInSubdir->setContent("Line 1\n");
+
+        $stream = fopen($this->fileInSubdir->url(), 'r');
+
+        fgets($stream);
+        fgets($stream);
+
+        assertTrue(feof($stream));
+    }
 }

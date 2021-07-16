@@ -261,7 +261,7 @@ final class OpenedFile
 
     private function restorePosition(): void
     {
-        $this->base->getContentObject()->seek($this->position, SEEK_SET);
+        $this->base->getContentObject()->seek($this->position, SEEK_SET, false);
     }
 
     private function savePosition(): void

@@ -127,18 +127,38 @@ class StringBasedFileContentTestCase extends TestCase
     /**
      * @test
      */
-    public function readSizeReachesEof(): void
+    public function readSizeReachesDoesNotReachEof(): void
     {
         $this->stringBasedFileContent->read(9);
+        assertFalse($this->stringBasedFileContent->eof());
+    }
+
+    /**
+     * @test
+     */
+    public function readSizeReachesEofOnNextRead(): void
+    {
+        $this->stringBasedFileContent->read(9);
+        $this->stringBasedFileContent->read(1);
         assertTrue($this->stringBasedFileContent->eof());
     }
 
     /**
      * @test
      */
-    public function readMoreThanSizeReachesEof(): void
+    public function readMoreThanSizeDoesNotReachEof(): void
     {
         $this->stringBasedFileContent->read(10);
+        assertFalse($this->stringBasedFileContent->eof());
+    }
+
+    /**
+     * @test
+     */
+    public function readMoreThanSizeReachesEofOnNextRead(): void
+    {
+        $this->stringBasedFileContent->read(10);
+        $this->stringBasedFileContent->read(1);
         assertTrue($this->stringBasedFileContent->eof());
     }
 

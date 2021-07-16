@@ -174,6 +174,7 @@ class vfsStreamWrapperFileTestCase extends vfsStreamWrapperBaseTestCase
     {
         $fp = fopen($this->fileInSubdir->url(), 'r');
         fseek($fp, 1, SEEK_END);
+        fread($fp, 1);
         assertTrue(feof($fp));
         fclose($fp);
     }

@@ -147,9 +147,9 @@ class vfsStreamFileTestCase extends TestCase
     /**
      * @test
      */
-    public function isAtEofWhenEmpty(): void
+    public function isNotAtEofWhenEmpty(): void
     {
-        assertTrue($this->file->eof());
+        assertFalse($this->file->eof());
     }
 
     /**
@@ -171,19 +171,10 @@ class vfsStreamFileTestCase extends TestCase
     /**
      * @test
      */
-    public function readFromEmptyFileMovesPointer(): void
+    public function readFromEmptyFileDoesNotMovePointer(): void
     {
         $this->file->read(5);
-        assertThat($this->file->getBytesRead(), equals(5));
-    }
-
-    /**
-     * @test
-     */
-    public function reportsAmountOfBytesReadEvenWhenEmpty(): void
-    {
-        $this->file->read(5);
-        assertThat($this->file->getBytesRead(), equals(5));
+        assertThat($this->file->getBytesRead(), equals(0));
     }
 
     /**
@@ -229,6 +220,10 @@ class vfsStreamFileTestCase extends TestCase
         assertFalse($this->file->eof());
 
         assertThat($this->file->read(3), equals('baz'));
+        assertThat($this->file->getBytesRead(), equals(9));
+        assertFalse($this->file->eof());
+
+        assertThat($this->file->read(1), equals(''));
         assertThat($this->file->getBytesRead(), equals(9));
         assertTrue($this->file->eof());
     }
